@@ -1,4 +1,4 @@
-import { App, Modal, TFile, Vault, View, Workspace } from 'obsidian';
+import { App, MarkdownView, Modal, TFile, Vault, View, Workspace } from 'obsidian';
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { DIAGRAM_VIEW_TYPE } from './constants';
@@ -83,6 +83,18 @@ export default class DiagramsView extends Modal {
 
         const refreshMarkdownViews = async () => {
             // Haven't found a way to refresh the hostView.
+            // Delete the preceding image link through regular matching! and add it back in the modified content
+            const editor = this.app.workspace.getActiveViewOfType(MarkdownView).editor;
+            const cursor = editor.getCursor();
+            const line = editor.getLine(cursor.line);
+            const match = line.match(/\[\[.*?\]\]/);
+            if (!match) return;
+            const modifiedLine = line.replace(/\!\[\[/, '[[');
+            editor.replaceRange(modifiedLine, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
+            setTimeout(() => {
+              const finalLine = modifiedLine.replace(/\[\[/, '![[');
+              editor.replaceRange(finalLine, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: modifiedLine.length });
+            }, 200);
         }
 
         const insertDiagram = () => {
