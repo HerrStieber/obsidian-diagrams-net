@@ -74,7 +74,7 @@ export default class DiagramsNet extends Plugin {
 
 	async availablePath() {
 		// @ts-ignore: Type not documented.
-		const base = await this.vault.getAvailablePathForAttachments('Diagram', 'svg')
+		const base = await this.vault.getAvailablePathForAttachments('Diagram', 'svg', this.workspace.getActiveFile())
 		return {
 			svgPath: base,
 			xmlPath: this.getXmlPath(base)
